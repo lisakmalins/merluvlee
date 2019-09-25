@@ -1,0 +1,18 @@
+reads:
+  desiree:
+    name: desiree
+    fastq: KFRAG_00469.fastq.gz # Desiree
+    coverage: 65
+  ivp48:
+    name: ivp48
+    fastq: KFRAG_00470.fastq.gz # IVP-48
+    coverage: 35
+
+foo:
+    - KFRAG_00469.fastq.gz # Desiree
+    - KFRAG_00470.fastq.gz # IVP-48
+
+genome_size: 844
+coverage: 35
+error_rate: 0.01
+mer_size: 30
