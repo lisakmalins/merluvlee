@@ -10,7 +10,7 @@ rule targets:
 def get_fastq(wildcards):
     for set in config["reads"]:
         if wildcards.name == config["reads"][set]["name"]:
-            return "data/reads/" + config["reads"][set]["fastq"]
+            return "data/reads/" + config["reads"][set]["fastq"].rstrip(".gz")
 
 def __expected_kmers(name, k):
     G = config["genome_size"]
@@ -22,6 +22,14 @@ def __expected_kmers(name, k):
 
 def expected_kmers(wildcards):
     return __expected_kmers(wildcards.name, int(wildcards.k))
+
+rule gunzip:
+    input:
+        "data/reads/{fastq}.gz"
+    output:
+        temp("data/reads/{fastq}")
+    shell:
+        "gunzip -c {input} > {output}"
 
 rule count_pass1:
     input:
