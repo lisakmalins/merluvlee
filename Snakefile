@@ -5,7 +5,8 @@ configfile: "config.yaml"
 
 rule targets:
     input:
-        expand("data/kmer-counts/{name}_{k}mer_histo.txt", name=config["reads"], k=config["mer_size"])
+        expand("data/kmer-counts/{name}_{k}mer_histo.txt", name=config["reads"], k=config["mer_size"]),
+        expand("data/kmer-counts/{name}_{k}mer_dumps.fa", name=config["reads"], k=config["mer_size"]) #temp
 
 def get_fastq(wildcards):
     for set in config["reads"]:
@@ -49,7 +50,7 @@ rule count_pass2:
     params:
         genomesize=str(config["genome_size"]) + "M",
     output:
-        temp("data/kmer-counts/{name}_{k}mer_counts.jf")
+        "data/kmer-counts/{name}_{k}mer_counts.jf"
     threads: 16
     shell:
         "jellyfish count -m {wildcards.k} -C -s {params.genomesize} -t {threads} --bc {input.bc} -o {output} {input.fastq}"
