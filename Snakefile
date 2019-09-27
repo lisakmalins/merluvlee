@@ -14,7 +14,7 @@ def get_fastq(wildcards):
             return "data/reads/" + config["reads"][set]["fastq"].rstrip(".gz")
 
 def __expected_kmers(name, k):
-    G = config["genome_size"]
+    G = config["reads"][name]["genome_size"]
     c = config["reads"][name]["coverage"]
     e = config["error_rate"]
     k = k
@@ -48,7 +48,7 @@ rule count_pass2:
         fastq=get_fastq,
         bc="data/kmer-counts/{name}_{k}.bc"
     params:
-        genomesize=str(config["genome_size"]) + "M",
+        genomesize=lambda wildcards: str(config["reads"][wildcards.name]["genome_size"]) + "M"
     output:
         "data/kmer-counts/{name}_{k}mer_counts.jf"
     threads: 16
@@ -77,5 +77,5 @@ rule print_jelly_size:
             total_kmers = __expected_kmers(set, config["mer_size"])
             memory = round(int(total_kmers.rstrip("MG")) * 18 / 8)
             print(set, total_kmers, "k-mers expected")
-            print(set, str(config["genome_size"]) + "M", "k-mers expected more than once")
+            print(set, str(config["reads"][set]["genome_size"]) + "M", "k-mers expected more than once")
             print(set, "expected memory size", memory, "Megabytes" )
