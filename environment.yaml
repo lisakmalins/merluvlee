@@ -7,6 +7,7 @@ channels:
 dependencies:
   - graphviz=2.40.1
   - jellyfish=2.2.10
+  - pigz=2.4
   - r-base=3.6.0
   - r-dplyr=0.8.3
   - r-ggplot2=3.2.0

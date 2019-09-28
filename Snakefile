@@ -29,8 +29,10 @@ rule gunzip:
         "data/reads/{fastq}.gz"
     output:
         "data/reads/{fastq}"
+    threads:
+        16
     shell:
-        "gunzip -c {input} > {output}"
+        "unpigz -p {threads} -c {input} > {output}"
 
 rule count_pass1:
     input:
