@@ -28,7 +28,7 @@ rule gunzip:
     input:
         "data/reads/{fastq}.gz"
     output:
-        temp("data/reads/{fastq}")
+        "data/reads/{fastq}"
     shell:
         "gunzip -c {input} > {output}"
 
@@ -79,3 +79,13 @@ rule print_jelly_size:
             print(set, total_kmers, "k-mers expected")
             print(set, str(config["reads"][set]["genome_size"]) + "M", "k-mers expected more than once")
             print(set, "expected memory size", memory, "Megabytes" )
+
+# Remove low-hanging fruit intermediate files
+# Ignore bash errors of "No such file or directory"
+rule sweep:
+    shell:
+        """
+        set +e
+        rm data/reads/*.fastq data/kmer-counts/*.bc
+        exit 0
+        """
