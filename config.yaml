@@ -11,10 +11,6 @@ reads:
     coverage: 35
 
 mer_size:
-  - 15
-  - 25
   - 30
-  - 35
-  - 45
 
 error_rate: 0.01
