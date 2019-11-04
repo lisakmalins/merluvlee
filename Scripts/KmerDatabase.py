@@ -6,6 +6,7 @@ Gets k-mers and counts from jellyfish dump file and inserts in database.
 Usage: python KmerDatabase.py output.db dump1.fa dump2.fa
 """
 import sys
+from os import stat
 import sqlite3
 from time import ctime
 
@@ -34,7 +35,15 @@ cursor.execute('CREATE TABLE kmers (seq TEXT PRIMARY KEY, count1 INTEGER, count2
 # Populate table from files
 for source in (dump1, dump2):
     sys.stderr.write("Reading k-mers and counts from {}\t\t{}\n".format(source.name, ctime()))
+    filelength = float(stat(source.name).st_size)
+    percent = 10
+
     while True:
+        # Read progress counter
+        if (source.tell() / filelength * 100) >= percent:
+            sys.stderr.write("Read progress: {}%\t\t{}\n".format(percent, ctime()))
+            percent += 10
+
         # Get sequence and count
         count = source.readline().strip("\n")
         if not count: break
