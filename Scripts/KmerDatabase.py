@@ -30,7 +30,7 @@ cursor = connection.cursor()
 
 # Create table
 cursor.execute('DROP TABLE IF EXISTS kmers')
-cursor.execute('CREATE TABLE kmers (seq TEXT PRIMARY KEY, count1 INTEGER, count2 INTEGER)')
+cursor.execute('CREATE TABLE kmers (seq TEXT PRIMARY KEY UNIQUE, count1 INTEGER, count2 INTEGER)')
 
 # Populate table from files
 for source in (dump1, dump2):
