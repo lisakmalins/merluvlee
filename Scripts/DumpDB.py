@@ -30,8 +30,17 @@ for file in sys.argv[1:]:
 
     # Dump contents of all tables
     for (table, ) in tables:
+        # Print table name
         print("\nTable name: {}".format(table))
+
+        # Grab contents
         cursor.execute("SELECT * FROM {}".format(table))
+
+        # Print column names
+        col_names = [tuple[0] for tuple in cursor.description]
+        print("Column names: {}".format(str(col_names)))
+
+        # Print contents
         row = cursor.fetchone()
         while row:
             print(row)
