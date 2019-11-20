@@ -8,6 +8,17 @@ rule targets:
         expand("data/kmer-counts/{name}_{k}mer_histo.txt", name=config["reads"], k=config["mer_size"]),
         expand("data/kmer-counts/{name}_{k}mer_dumps.fa", name=config["reads"], k=config["mer_size"]) #temp
 
+def constrain(arg):
+    if type(arg) == list:
+        return "|".join(arg)
+    else:
+        return arg
+
+wildcard_constraints:
+    name=constrain(list(config["reads"].keys())),
+    fastq=constrain([config["reads"][set]["fastq"].rstrip(".gz") for set in config["reads"]])
+
+
 def get_fastq(wildcards):
     for set in config["reads"]:
         if wildcards.name == config["reads"][set]["name"]:
