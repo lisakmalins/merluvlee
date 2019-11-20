@@ -6,7 +6,7 @@ configfile: "config.yaml"
 rule targets:
     input:
         expand("data/kmer-counts/{name}_{k}mer_histo.txt", name=config["reads"], k=config["mer_size"]),
-        expand("data/kmer-counts/{name}_{k}mer_dumps.fa", name=config["reads"], k=config["mer_size"]) #temp
+        expand("data/sql/combined_{names}_{k}mers.db", names="_".join(config["reads"]), k=config["mer_size"])
 
 def constrain(arg):
     if type(arg) == list:
@@ -92,6 +92,22 @@ rule print_jelly_size:
             print(set, total_kmers, "k-mers expected")
             print(set, str(config["reads"][set]["genome_size"]) + "M", "k-mers expected more than once")
             print(set, "expected memory size", memory, "Megabytes" )
+
+rule build_tables:
+    input:
+        "data/kmer-counts/{name}_{k}mer_dumps.fa"
+    output:
+        "data/sql/{name}_{k}mers.db"
+    shell:
+        "python Scripts/KmerDatabase.py {input} {output}"
+
+rule join_tables:
+    input:
+        expand("data/sql/{name}_{{k}}mers.db", name=["{name1}", "{name2}"])
+    output:
+        "data/sql/combined_{name1}_{name2}_{k}mers.db"
+    shell:
+        "python Scripts/JoinKmerDatabase.py {input} {output}"
 
 # Remove low-hanging fruit intermediate files
 # Ignore bash errors of "No such file or directory"
