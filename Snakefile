@@ -132,11 +132,20 @@ rule unite_tables:
 
 rule dump_counts:
     input:
-        "data/sql/combined_{name1}_{name2}_{k}mers.db"
+        "data/sql/combined_{name1}_{name2}_{k}mers_{nn}.db"
+    output:
+        "data/sql/combined_{name1}_{name2}_{k}mer_counts_{nn}.csv"
+    shell:
+        "python Scripts/DumpCounts.py {input} {output}"
+
+rule concatenate_counts:
+    input:
+        expand("data/sql/combined_{{name1}}_{{name2}}_{{k}}mer_counts_{n1}{n2}.csv", \
+        n1 = ["A", "C", "T", "G"], n2 = ["A", "C", "T", "G"])
     output:
         "data/sql/combined_{name1}_{name2}_{k}mer_counts.csv"
     shell:
-        "python Scripts/DumpCounts.py {input} {output}"
+        "cat {input} > {output}"
 
 # Remove low-hanging fruit intermediate files
 # Ignore bash errors of "No such file or directory"
