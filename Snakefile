@@ -6,7 +6,7 @@ configfile: "config.yaml"
 rule targets:
     input:
         expand("data/kmer-counts/{name}_{k}mer_histo.txt", name=config["reads"], k=config["mer_size"]),
-        expand("data/sql/combined_{names}_{k}mers.db", names="_".join(config["reads"]), k=config["mer_size"])
+        expand("data/sql/combined_{names}_{k}mer_counts.csv", names="_".join(config["reads"]), k=config["mer_size"])
 
 def constrain(arg):
     if type(arg) == list:
@@ -129,6 +129,14 @@ rule unite_tables:
         "data/sql/combined_{name1}_{name2}_{k}mers.db"
     run:
         pass
+
+rule dump_counts:
+    input:
+        "data/sql/combined_{name1}_{name2}_{k}mers.db"
+    output:
+        "data/sql/combined_{name1}_{name2}_{k}mer_counts.csv"
+    shell:
+        "python Scripts/DumpCounts.py {input} {output}"
 
 # Remove low-hanging fruit intermediate files
 # Ignore bash errors of "No such file or directory"
