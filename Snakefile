@@ -93,21 +93,42 @@ rule print_jelly_size:
             print(set, str(config["reads"][set]["genome_size"]) + "M", "k-mers expected more than once")
             print(set, "expected memory size", memory, "Megabytes" )
 
-rule build_tables:
+# Split Jellyfish dump files by first 2 nucleotides.
+# Grab sequences and preceding count then remove group separators
+rule split_dump:
     input:
         "data/kmer-counts/{name}_{k}mer_dumps.fa"
     output:
-        "data/sql/{name}_{k}mers.db"
+        "data/kmer-counts/{name}_{k}mer_dumps_{nn}.fa"
+    shell:
+        """
+        grep "^{wildcards.nn}" {input} -B 1 | grep -v "^--" > {output}
+        """
+
+rule build_tables:
+    input:
+        "data/kmer-counts/{name}_{k}mer_dumps_{nn}.fa"
+    output:
+        "data/sql/{name}_{k}mers_{nn}.db"
     shell:
         "python Scripts/KmerDatabase.py {input} {output}"
 
 rule join_tables:
     input:
-        expand("data/sql/{name}_{{k}}mers.db", name=["{name1}", "{name2}"])
+        expand("data/sql/{name}_{{k}}mers_{{nn}}.db", name=["{name1}", "{name2}"])
     output:
-        "data/sql/combined_{name1}_{name2}_{k}mers.db"
+        "data/sql/combined_{name1}_{name2}_{k}mers_{nn}.db"
     shell:
         "python Scripts/JoinKmerDatabase.py {input} {output}"
+
+rule unite_tables:
+    input:
+        expand("data/sql/combined_{{name1}}_{{name2}}_{{k}}mers_{n1}{n2}.db", \
+        n1 = ["A", "C", "T", "G"], n2 = ["A", "C", "T", "G"])
+    output:
+        "data/sql/combined_{name1}_{name2}_{k}mers.db"
+    run:
+        pass
 
 # Remove low-hanging fruit intermediate files
 # Ignore bash errors of "No such file or directory"

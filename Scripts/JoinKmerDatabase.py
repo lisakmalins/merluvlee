@@ -1,6 +1,6 @@
 # Lisa Malins
 # 20 Nov 2019
-# KmerDatabase.py
+# JoinKmerDatabase.py
 """
 Gets k-mers and counts from jellyfish dump file and inserts in database.
 Usage: python KmerDatabase.py input1.db input2.db output.db
