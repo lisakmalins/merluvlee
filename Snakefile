@@ -121,15 +121,6 @@ rule join_tables:
     shell:
         "python Scripts/JoinKmerDatabase.py {input} {output}"
 
-rule unite_tables:
-    input:
-        expand("data/sql/combined_{{name1}}_{{name2}}_{{k}}mers_{n1}{n2}.db", \
-        n1 = ["A", "C", "T", "G"], n2 = ["A", "C", "T", "G"])
-    output:
-        "data/sql/combined_{name1}_{name2}_{k}mers.db"
-    run:
-        pass
-
 rule dump_counts:
     input:
         "data/sql/combined_{name1}_{name2}_{k}mers_{nn}.db"
