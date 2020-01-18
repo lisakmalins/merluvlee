@@ -9,6 +9,7 @@ reads:
     fastq: KFRAG_00470.fastq.gz # IVP-48
     genome_size: 844 # megabases
     coverage: 35
+    cutoff: 15
 
 mer_size:
   - 30

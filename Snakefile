@@ -144,8 +144,10 @@ rule biased_kmers:
         "data/sql/combined_{names}_{{k}}mers_{{nn}}.db".format(names="_".join(config["reads"]))
     output:
         "data/biased-kmers/{name2}_biased_{k}mers_{nn}.csv"
+    params:
+        cutoff=config["reads"]["ivp48"]["cutoff"] #TODO FIX HARDCODED
     shell:
-        "python Scripts/BiasedKmers.py {input} 2 {output}"
+        "python Scripts/BiasedKmers.py {input} 2 {output} {params.cutoff}"
 
 rule concatenate_biased_kmers:
     input:
