@@ -6,7 +6,8 @@ configfile: "config.yaml"
 rule targets:
     input:
         expand("data/kmer-counts/{name}_{k}mer_histo.txt", name=config["reads"], k=config["mer_size"]),
-        expand("data/sql/combined_{names}_{k}mer_counts.csv", names="_".join(config["reads"]), k=config["mer_size"])
+        expand("data/sql/combined_{names}_{k}mer_counts.csv", names="_".join(config["reads"]), k=config["mer_size"]),
+        expand("data/biased-kmers/{name2}_biased_{k}mers.csv", name2="ivp48", k=config["mer_size"])
 
 def constrain(arg):
     if type(arg) == list:
@@ -135,6 +136,23 @@ rule concatenate_counts:
         n1 = ["A", "C", "T", "G"], n2 = ["A", "C", "T", "G"])
     output:
         "data/sql/combined_{name1}_{name2}_{k}mer_counts.csv"
+    shell:
+        "cat {input} > {output}"
+
+rule biased_kmers:
+    input:
+        "data/sql/combined_{names}_{{k}}mers_{{nn}}.db".format(names="_".join(config["reads"]))
+    output:
+        "data/biased-kmers/{name2}_biased_{k}mers_{nn}.csv"
+    shell:
+        "python Scripts/BiasedKmers.py {input} 2 {output}"
+
+rule concatenate_biased_kmers:
+    input:
+        expand("data/biased-kmers/{{name2}}_biased_{{k}}mers_{n1}{n2}.csv", \
+        n1 = ["A", "C", "T", "G"], n2 = ["A", "C", "T", "G"])
+    output:
+        "data/biased-kmers/{name2}_biased_{k}mers.csv"
     shell:
         "cat {input} > {output}"
 
